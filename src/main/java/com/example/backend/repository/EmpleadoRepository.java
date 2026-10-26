@@ -20,14 +20,14 @@ public class EmpleadoRepository {
 
     public List<Empleado> findAll() {
         return jdbcTemplate.query(
-                "SELECT * FROM fn_empleados_listar()",
+                employeeWithBenefitsQuery("SELECT * FROM fn_empleados_listar()"),
                 this::mapRow
         );
     }
 
     public Optional<Empleado> findById(int id) {
         return jdbcTemplate.query(
-                "SELECT * FROM fn_empleado_obtener(?)",
+                employeeWithBenefitsQuery("SELECT * FROM fn_empleado_obtener(?)"),
                 this::mapRow,
                 id
         ).stream().findFirst();
@@ -36,7 +36,7 @@ public class EmpleadoRepository {
     public Empleado create(String nombre, String apellidoPaterno, String apellidoMaterno,
                            BigDecimal sueldoBaseMensual, Date fechaIngreso) {
         return jdbcTemplate.queryForObject(
-                "SELECT * FROM fn_empleado_crear(?, ?, ?, ?, ?)",
+                employeeWithBenefitsQuery("SELECT * FROM fn_empleado_crear(?, ?, ?, ?, ?)"),
                 this::mapRow,
                 nombre, apellidoPaterno, apellidoMaterno, sueldoBaseMensual, fechaIngreso
         );
@@ -45,7 +45,7 @@ public class EmpleadoRepository {
     public Optional<Empleado> update(int id, String nombre, String apellidoPaterno, String apellidoMaterno,
                                      BigDecimal sueldoBaseMensual, Date fechaIngreso) {
         return jdbcTemplate.query(
-                "SELECT * FROM fn_empleado_actualizar(?, ?, ?, ?, ?, ?)",
+                employeeWithBenefitsQuery("SELECT * FROM fn_empleado_actualizar(?, ?, ?, ?, ?, ?)"),
                 this::mapRow,
                 id, nombre, apellidoPaterno, apellidoMaterno, sueldoBaseMensual, fechaIngreso
         ).stream().findFirst();
@@ -83,7 +83,18 @@ public class EmpleadoRepository {
                 resultSet.getString("apellido_paterno"),
                 resultSet.getString("apellido_materno"),
                 resultSet.getBigDecimal("sueldo_base_mensual"),
-                resultSet.getDate("fecha_ingreso").toLocalDate()
+                resultSet.getDate("fecha_ingreso").toLocalDate(),
+                resultSet.getInt("dias_vacaciones"),
+                resultSet.getBigDecimal("aguinaldo")
         );
+    }
+
+    private String employeeWithBenefitsQuery(String employeeQuery) {
+        return """
+                SELECT employee.*,
+                       fn_empleado_calcular_vacaciones(employee.id) AS dias_vacaciones,
+                       fn_empleado_calcular_aguinaldo(employee.id) AS aguinaldo
+                FROM (%s) AS employee
+                """.formatted(employeeQuery);
     }
 }

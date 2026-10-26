@@ -9,5 +9,7 @@ public record Empleado(
         String apellidoPaterno,
         String apellidoMaterno,
         BigDecimal sueldoBaseMensual,
-        LocalDate fechaIngreso
+        LocalDate fechaIngreso,
+        Integer diasVacaciones,
+        BigDecimal aguinaldo
 ){}
