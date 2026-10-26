@@ -19,73 +19,44 @@ public class EmpleadoRepository {
     }
 
     public List<Empleado> findAll() {
-        return jdbcTemplate.query(
-                employeeWithBenefitsQuery("SELECT * FROM fn_empleados_listar()"),
-                this::mapRow
-        );
+        return jdbcTemplate.query(employeeWithBenefitsQuery("SELECT * FROM fn_empleados_listar()"), this::mapRow);
     }
 
     public Optional<Empleado> findById(int id) {
-        return jdbcTemplate.query(
-                employeeWithBenefitsQuery("SELECT * FROM fn_empleado_obtener(?)"),
-                this::mapRow,
-                id
-        ).stream().findFirst();
+        return jdbcTemplate.query(employeeWithBenefitsQuery("SELECT * FROM fn_empleado_obtener(?)"), this::mapRow, id).stream().findFirst();
     }
 
-    public Empleado create(String nombre, String apellidoPaterno, String apellidoMaterno,
-                           BigDecimal sueldoBaseMensual, Date fechaIngreso) {
-        return jdbcTemplate.queryForObject(
-                employeeWithBenefitsQuery("SELECT * FROM fn_empleado_crear(?, ?, ?, ?, ?)"),
-                this::mapRow,
-                nombre, apellidoPaterno, apellidoMaterno, sueldoBaseMensual, fechaIngreso
-        );
+    public Empleado create(String nombre, String apellidoPaterno, String apellidoMaterno, BigDecimal sueldoBaseMensual, Date fechaIngreso) {
+        return jdbcTemplate.queryForObject(employeeWithBenefitsQuery("SELECT * FROM fn_empleado_crear(?, ?, ?, ?, ?)"), this::mapRow, nombre, apellidoPaterno, apellidoMaterno, sueldoBaseMensual, fechaIngreso);
     }
 
-    public Optional<Empleado> update(int id, String nombre, String apellidoPaterno, String apellidoMaterno,
-                                     BigDecimal sueldoBaseMensual, Date fechaIngreso) {
-        return jdbcTemplate.query(
-                employeeWithBenefitsQuery("SELECT * FROM fn_empleado_actualizar(?, ?, ?, ?, ?, ?)"),
-                this::mapRow,
-                id, nombre, apellidoPaterno, apellidoMaterno, sueldoBaseMensual, fechaIngreso
-        ).stream().findFirst();
+    public Optional<Empleado> update(int id, String nombre, String apellidoPaterno, String apellidoMaterno, BigDecimal sueldoBaseMensual, Date fechaIngreso) {
+        return jdbcTemplate.query(employeeWithBenefitsQuery("SELECT * FROM fn_empleado_actualizar(?, ?, ?, ?, ?, ?)"), this::mapRow, id, nombre, apellidoPaterno, apellidoMaterno, sueldoBaseMensual, fechaIngreso).stream().findFirst();
     }
 
     public boolean delete(int id) {
-        Boolean deleted = jdbcTemplate.queryForObject(
-                "SELECT fn_empleado_eliminar(?)",
-                Boolean.class,
-                id
-        );
+        Boolean deleted = jdbcTemplate.queryForObject("SELECT fn_empleado_eliminar(?)", Boolean.class, id);
         return Boolean.TRUE.equals(deleted);
     }
 
     public Optional<Integer> calculateVacations(int id) {
-        return jdbcTemplate.query(
-                "SELECT fn_empleado_calcular_vacaciones(?)",
-                (resultSet, rowNum) -> (Integer) resultSet.getObject(1),
-                id
-        ).stream().findFirst();
+        return jdbcTemplate.query("SELECT fn_empleado_calcular_vacaciones(?)", (resultSet, rowNum) -> (Integer) resultSet.getObject(1), id).stream().findFirst();
     }
 
     public Optional<BigDecimal> calculateBonus(int id) {
-        return jdbcTemplate.query(
-                "SELECT fn_empleado_calcular_aguinaldo(?)",
-                (resultSet, rowNum) -> resultSet.getBigDecimal(1),
-                id
-        ).stream().findFirst();
+        return jdbcTemplate.query("SELECT fn_empleado_calcular_aguinaldo(?)", (resultSet, rowNum) -> resultSet.getBigDecimal(1), id).stream().findFirst();
     }
 
     private Empleado mapRow(java.sql.ResultSet resultSet, int rowNum) throws java.sql.SQLException {
         return new Empleado(
-                resultSet.getInt("id"),
-                resultSet.getString("nombre"),
-                resultSet.getString("apellido_paterno"),
-                resultSet.getString("apellido_materno"),
-                resultSet.getBigDecimal("sueldo_base_mensual"),
-                resultSet.getDate("fecha_ingreso").toLocalDate(),
-                resultSet.getInt("dias_vacaciones"),
-                resultSet.getBigDecimal("aguinaldo")
+            resultSet.getInt("id"),
+            resultSet.getString("nombre"),
+            resultSet.getString("apellido_paterno"),
+            resultSet.getString("apellido_materno"),
+            resultSet.getBigDecimal("sueldo_base_mensual"),
+            resultSet.getDate("fecha_ingreso").toLocalDate(),
+            resultSet.getInt("dias_vacaciones"),
+            resultSet.getBigDecimal("aguinaldo")
         );
     }
 

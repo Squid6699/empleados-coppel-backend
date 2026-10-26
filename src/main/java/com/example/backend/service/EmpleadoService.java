@@ -25,28 +25,27 @@ public class EmpleadoService {
     }
 
     public Empleado findById(int id) {
-        return repository.findById(id)
-                .orElseThrow(() -> notFound(id));
+        return repository.findById(id).orElseThrow(() -> notFound(id));
     }
 
     public Empleado create(EmpleadoRequest request) {
         return repository.create(
-                request.nombre(),
-                request.apellidoPaterno(),
-                request.apellidoMaterno(),
-                request.sueldoBaseMensual(),
-                Date.valueOf(request.fechaIngreso())
+            request.nombre(),
+            request.apellidoPaterno(),
+            request.apellidoMaterno(),
+            request.sueldoBaseMensual(),
+            Date.valueOf(request.fechaIngreso())
         );
     }
 
     public Empleado update(int id, EmpleadoRequest request) {
         return repository.update(
-                id,
-                request.nombre(),
-                request.apellidoPaterno(),
-                request.apellidoMaterno(),
-                request.sueldoBaseMensual(),
-                Date.valueOf(request.fechaIngreso())
+            id,
+            request.nombre(),
+            request.apellidoPaterno(),
+            request.apellidoMaterno(),
+            request.sueldoBaseMensual(),
+            Date.valueOf(request.fechaIngreso())
         ).orElseThrow(() -> notFound(id));
     }
 
@@ -58,14 +57,12 @@ public class EmpleadoService {
 
     public int calculateVacations(int id) {
         findById(id);
-        return repository.calculateVacations(id)
-                .orElseThrow(() -> notFound(id));
+        return repository.calculateVacations(id).orElseThrow(() -> notFound(id));
     }
 
     public BigDecimal calculateBonus(int id) {
         findById(id);
-        return repository.calculateBonus(id)
-                .orElseThrow(() -> notFound(id));
+        return repository.calculateBonus(id).orElseThrow(() -> notFound(id));
     }
 
     private ResponseStatusException notFound(int id) {
