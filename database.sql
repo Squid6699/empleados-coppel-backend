@@ -141,14 +141,8 @@ AS $$
                 -- Menos de 6 meses: no aplica la regla indicada
                 WHEN AGE(CURRENT_DATE, fecha_ingreso) < INTERVAL '6 months' THEN 0::NUMERIC
 
-                -- De 6 meses a menos de 1 año:
-                -- 10% anual del sueldo mensual, proporcional
+                -- De 6 meses a menos de 1 año: 10% del sueldo base mensual (sin prorrateo)
                 WHEN AGE(CURRENT_DATE, fecha_ingreso) < INTERVAL '1 year' THEN sueldo_base_mensual * 0.10
-                    * (
-                        (
-                            EXTRACT(YEAR FROM AGE(CURRENT_DATE, fecha_ingreso)) * 12 +
-                            EXTRACT(MONTH FROM AGE(CURRENT_DATE, fecha_ingreso))) / 12.0
-                         )
 
                 -- De 1 año a menos de 2 años: 15 días
                 WHEN AGE(CURRENT_DATE, fecha_ingreso) < INTERVAL '2 years' THEN (sueldo_base_mensual / 30.0) * 15
